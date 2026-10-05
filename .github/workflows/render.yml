@@ -1,0 +1,19 @@
+name: Oasis Render
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/10 * * * *'
+concurrency: oasis-render
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - name: Instalar ffmpeg
+        run: sudo apt-get -qq update && sudo apt-get -qq install -y ffmpeg >/dev/null
+      - name: Renderizar recortes pendientes
+        env:
+          OASIS_PULL: ${{ secrets.OASIS_PULL }}
+        run: |
+          curl -fsS -H "X-OASIS-PULL: $OASIS_PULL" "https://sanate.store/gh-render.php?a=driver" -o driver.py
+          python3 driver.py
